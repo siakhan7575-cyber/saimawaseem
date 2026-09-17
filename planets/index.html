@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inner Worlds — Mercury, Venus & Earth</title>
+<meta name="description" content="A landing page exploring the inner planets of our solar system: Mercury, Venus, and Earth — the blue planet." />
+<style>
+  :root{
+    --bg:#05060d;
+    --bg-2:#0a0c1a;
+    --ink:#eef1ff;
+    --muted:#9aa3c7;
+    --line:rgba(255,255,255,.10);
+    --card:rgba(255,255,255,.04);
+    --accent:#5b8cff;
+    --accent-2:#7ee0ff;
+    --maxw:1120px;
+    --r:22px;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(91,140,255,.18), transparent 60%),
+      radial-gradient(900px 600px at 0% 20%, rgba(126,224,255,.10), transparent 55%),
+      linear-gradient(180deg,var(--bg),var(--bg-2));
+    color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ---------- starfield ---------- */
+  .stars,.stars::after,.stars::before{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-repeat:repeat;
+  }
+  .stars{
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 130px 80px, #cfe0ff, transparent),
+      radial-gradient(1.5px 1.5px at 300px 150px, #fff, transparent),
+      radial-gradient(1px 1px at 420px 60px, #dfe9ff, transparent),
+      radial-gradient(1px 1px at 550px 220px, #fff, transparent);
+    background-size:600px 300px;
+    opacity:.55;
+    animation:drift 200s linear infinite;
+  }
+  .stars::after{
+    content:"";
+    background-image:
+      radial-gradient(1px 1px at 80px 200px,#fff,transparent),
+      radial-gradient(1.5px 1.5px at 250px 40px,#bcd3ff,transparent),
+      radial-gradient(1px 1px at 480px 300px,#fff,transparent);
+    background-size:500px 400px;
+    opacity:.4;
+    animation:twinkle 6s ease-in-out infinite alternate;
+  }
+  @keyframes drift{from{background-position:0 0}to{background-position:600px 300px}}
+  @keyframes twinkle{from{opacity:.2}to{opacity:.55}}
+
+  .wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:20;
+    backdrop-filter:blur(12px);
+    background:rgba(5,6,13,.55);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em}
+  .brand .dot{width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,var(--accent-2),var(--accent) 60%,#173a8a);
+    box-shadow:0 0 18px rgba(91,140,255,.7)}
+  .navlinks{display:flex;gap:26px}
+  .navlinks a{color:var(--muted);text-decoration:none;font-size:.94rem;transition:color .2s}
+  .navlinks a:hover{color:var(--ink)}
+  @media(max-width:640px){.navlinks{display:none}}
+
+  /* ---------- hero ---------- */
+  header{padding:96px 0 64px;text-align:center;position:relative}
+  .eyebrow{
+    display:inline-block;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--accent-2);border:1px solid var(--line);border-radius:999px;
+    padding:7px 16px;margin-bottom:26px;background:var(--card)
+  }
+  h1{
+    font-size:clamp(2.6rem,7vw,5rem);line-height:1.02;font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(180deg,#fff,#aeb9e8);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{max-width:640px;margin:22px auto 0;color:var(--muted);font-size:1.12rem}
+  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;
+    font-weight:600;text-decoration:none;font-size:.98rem;transition:transform .2s,box-shadow .2s,background .2s
+  }
+  .btn.primary{background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#04122e;
+    box-shadow:0 10px 30px rgba(91,140,255,.35)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(91,140,255,.5)}
+  .btn.ghost{border:1px solid var(--line);color:var(--ink);background:var(--card)}
+  .btn.ghost:hover{border-color:rgba(255,255,255,.3)}
+
+  /* hero planets row */
+  .orbit-row{display:flex;justify-content:center;align-items:flex-end;gap:clamp(24px,6vw,80px);margin-top:64px;flex-wrap:wrap}
+  .orbit-row .planet{animation:bob 7s ease-in-out infinite}
+  .orbit-row .planet:nth-child(2){animation-delay:-2.3s}
+  .orbit-row .planet:nth-child(3){animation-delay:-4.6s}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+
+  /* ---------- planet visuals ---------- */
+  .planet{position:relative;border-radius:50%;box-shadow:inset -22px -14px 46px rgba(0,0,0,.65)}
+  .planet::after{content:"";position:absolute;inset:-14px;border-radius:50%;z-index:-1;
+    filter:blur(14px);opacity:.5}
+
+  .mercury{
+    width:96px;height:96px;
+    background:
+      radial-gradient(circle at 32% 28%, #b8b2a8, #8a8378 45%, #4c4741 100%);
+  }
+  .mercury::before{content:"";position:absolute;inset:0;border-radius:50%;
+    background:
+      radial-gradient(4px 4px at 60% 40%, rgba(0,0,0,.35),transparent),
+      radial-gradient(6px 6px at 38% 62%, rgba(0,0,0,.30),transparent),
+      radial-gradient(3px 3px at 70% 70%, rgba(0,0,0,.30),transparent),
+      radial-gradient(5px 5px at 50% 22%, rgba(255,255,255,.15),transparent)}
+  .mercury::after{background:radial-gradient(circle,#b8b2a8,transparent 70%)}
+
+  .venus{
+    width:150px;height:150px;
+    background:
+      radial-gradient(circle at 34% 30%, #ffe6a8, #f2b25a 42%, #b9722a 78%, #7c451a 100%);
+  }
+  .venus::before{content:"";position:absolute;inset:0;border-radius:50%;opacity:.5;
+    background:
+      repeating-radial-gradient(circle at 40% 40%, rgba(255,255,255,.12) 0 8px, transparent 8px 20px);
+    mix-blend-mode:screen}
+  .venus::after{background:radial-gradient(circle,#f6c56b,transparent 70%);opacity:.55}
+
+  .earth{
+    width:200px;height:200px;
+    background:
+      radial-gradient(circle at 30% 26%, #bfe3ff, transparent 42%),
+      radial-gradient(circle at 68% 72%, #0a2f6b, transparent 55%),
+      radial-gradient(circle at 50% 50%, #1f7a4d 0 6%, transparent 7%),
+      radial-gradient(circle at 60% 40%, #2b8a57 0 9%, transparent 10%),
+      radial-gradient(circle at 38% 64%, #2f9a5f 0 11%, transparent 12%),
+      linear-gradient(160deg,#1b62c9,#0b356f);
+  }
+  .earth::before{content:"";position:absolute;inset:0;border-radius:50%;opacity:.4;
+    background:
+      radial-gradient(18px 10px at 46% 34%, rgba(255,255,255,.7),transparent),
+      radial-gradient(24px 12px at 64% 60%, rgba(255,255,255,.55),transparent),
+      radial-gradient(16px 9px at 30% 70%, rgba(255,255,255,.55),transparent);
+    animation:clouds 60s linear infinite}
+  @keyframes clouds{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .earth::after{background:radial-gradient(circle,#5b8cff,transparent 68%);opacity:.7}
+
+  /* ---------- sections ---------- */
+  section{padding:72px 0}
+  .sec-head{max-width:620px;margin:0 auto 52px;text-align:center}
+  .sec-head h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:800;letter-spacing:-.02em}
+  .sec-head p{color:var(--muted);margin-top:12px}
+
+  .planet-block{
+    display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:center;
+    padding:40px;border:1px solid var(--line);border-radius:var(--r);
+    background:linear-gradient(180deg,var(--card),transparent);
+    margin-bottom:34px;
+  }
+  .planet-block:nth-child(even){grid-template-columns:1fr 220px}
+  .planet-block:nth-child(even) .art{order:2}
+  .planet-block:nth-child(even) .copy{order:1}
+  .art{display:flex;justify-content:center;align-items:center}
+  .copy h3{font-size:1.7rem;font-weight:800;display:flex;align-items:center;gap:12px}
+  .tag{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-2);
+    border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+  .copy p{color:var(--muted);margin-top:12px}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+  .fact{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .fact .k{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .fact .v{font-size:1.15rem;font-weight:700;margin-top:4px}
+  @media(max-width:760px){
+    .planet-block,.planet-block:nth-child(even){grid-template-columns:1fr;text-align:center;gap:28px;padding:30px}
+    .planet-block:nth-child(even) .art,.planet-block:nth-child(even) .copy{order:initial}
+    .copy h3{justify-content:center}
+    .facts{grid-template-columns:1fr 1fr}
+  }
+
+  /* compare strip */
+  .compare{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--card)}
+  .compare table{width:100%;border-collapse:collapse;font-size:.96rem}
+  .compare th,.compare td{padding:16px 18px;text-align:left;border-bottom:1px solid var(--line)}
+  .compare th{color:var(--muted);font-weight:600;letter-spacing:.04em;font-size:.82rem;text-transform:uppercase}
+  .compare tr:last-child td{border-bottom:none}
+  .compare td:first-child{font-weight:600}
+  .compare tbody tr:hover{background:rgba(255,255,255,.03)}
+  @media(max-width:640px){.compare{overflow-x:auto}.compare table{min-width:520px}}
+
+  footer{padding:60px 0 48px;text-align:center;border-top:1px solid var(--line);margin-top:40px}
+  footer p{color:var(--muted);font-size:.92rem}
+  footer .brand{justify-content:center;margin-bottom:14px}
+  .credit{margin-top:8px;font-size:.82rem;opacity:.7}
+  .credit a{color:var(--accent-2);text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <nav>
+    <div class="wrap">
+      <div class="brand"><span class="dot"></span> Inner Worlds</div>
+      <div class="navlinks">
+        <a href="#mercury">Mercury</a>
+        <a href="#venus">Venus</a>
+        <a href="#earth">Earth</a>
+        <a href="#compare">Compare</a>
+      </div>
+    </div>
+  </nav>
+
+  <header>
+    <div class="wrap">
+      <span class="eyebrow">The Inner Solar System</span>
+      <h1>Mercury, Venus<br />&amp; the Blue Planet</h1>
+      <p class="lede">Three rocky neighbours orbiting our star — a scorched messenger, a veiled furnace, and the one world we call home.</p>
+      <div class="cta">
+        <a href="#earth" class="btn primary">Meet Earth →</a>
+        <a href="#mercury" class="btn ghost">Explore the planets</a>
+      </div>
+
+      <div class="orbit-row" aria-hidden="true">
+        <div class="planet mercury" title="Mercury"></div>
+        <div class="planet venus" title="Venus"></div>
+        <div class="planet earth" title="Earth"></div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Worlds of the inner system</h2>
+        <p>Closest to the Sun, small and rocky — yet no two are alike.</p>
+      </div>
+
+      <!-- MERCURY -->
+      <article class="planet-block" id="mercury">
+        <div class="art"><div class="planet mercury" style="width:150px;height:150px"></div></div>
+        <div class="copy">
+          <h3>Mercury <span class="tag">Planet I</span></h3>
+          <p>The smallest planet and the swiftest, Mercury races around the Sun in just 88 days. With almost no atmosphere to hold heat, its cratered surface swings from blistering days to frozen nights.</p>
+          <div class="facts">
+            <div class="fact"><div class="k">Distance</div><div class="v">57.9M km</div></div>
+            <div class="fact"><div class="k">Day / Night</div><div class="v">430° / -180°C</div></div>
+            <div class="fact"><div class="k">Moons</div><div class="v">0</div></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- VENUS -->
+      <article class="planet-block" id="venus">
+        <div class="art"><div class="planet venus" style="width:170px;height:170px"></div></div>
+        <div class="copy">
+          <h3>Venus <span class="tag">Planet II</span></h3>
+          <p>Earth's near-twin in size, wrapped in thick clouds of sulphuric acid. A runaway greenhouse effect makes Venus the hottest planet of all — hot enough to melt lead — beneath a crushing golden haze.</p>
+          <div class="facts">
+            <div class="fact"><div class="k">Distance</div><div class="v">108.2M km</div></div>
+            <div class="fact"><div class="k">Surface</div><div class="v">465°C</div></div>
+            <div class="fact"><div class="k">Moons</div><div class="v">0</div></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- EARTH -->
+      <article class="planet-block" id="earth">
+        <div class="art"><div class="planet earth" style="width:190px;height:190px"></div></div>
+        <div class="copy">
+          <h3>Earth <span class="tag">The Blue Planet</span></h3>
+          <p>The only world we know that teems with life. Oceans cover most of its surface, a breathable atmosphere shields it, and a single silver Moon steadies its tilt. Home — the pale blue dot.</p>
+          <div class="facts">
+            <div class="fact"><div class="k">Distance</div><div class="v">149.6M km</div></div>
+            <div class="fact"><div class="k">Average</div><div class="v">15°C</div></div>
+            <div class="fact"><div class="k">Moons</div><div class="v">1</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="compare">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Side by side</h2>
+        <p>How the three inner worlds measure up.</p>
+      </div>
+      <div class="compare">
+        <table>
+          <thead>
+            <tr><th>Planet</th><th>Diameter</th><th>Year length</th><th>Avg. temperature</th><th>Moons</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>☿ Mercury</td><td>4,879 km</td><td>88 days</td><td>167°C</td><td>0</td></tr>
+            <tr><td>♀ Venus</td><td>12,104 km</td><td>225 days</td><td>465°C</td><td>0</td></tr>
+            <tr><td>🌍 Earth</td><td>12,742 km</td><td>365 days</td><td>15°C</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cta" style="margin-top:40px">
+        <a href="#" class="btn primary">Start the journey ↑</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="brand"><span class="dot"></span> Inner Worlds</div>
+      <p>A landing page exploring Mercury, Venus &amp; Earth — the blue planet.</p>
+      <p class="credit">Designed by <a href="https://lumierestudio.netlify.app">Lumière Studio</a></p>
+    </div>
+  </footer>
+</body>
+</html>
