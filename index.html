@@ -1,542 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terra Trio — Earth, Mercury &amp; Venus</title>
-<meta name="description" content="An immersive tour of the inner solar system's rocky worlds: the blue planet Earth, swift Mercury, and shrouded Venus." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
-<style>
-  :root {
-    --color-primary: #F8FAFC;
-    --color-accent: #3B82F6;
-    --color-accent-2: #38BDF8;
-    --color-bg: #0B0B10;
-    --color-fg: #F8FAFC;
-    --color-card: #131319;
-    --color-card-2: #1A1A22;
-    --color-muted: #94A3B8;
-    --color-border: #232333;
-    --color-ring: #3B82F6;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    --earth: #3B82F6;
-    --mercury: #B7A99A;
-    --venus: #E8B457;
+  <title>LuminaForge — Web Design & Development for Small Businesses</title>
+  <meta name="description" content="LuminaForge is the web design & development studio of Saima — custom, fast, responsive websites that help small businesses look professional online. Based in Mardan, KPK, serving Rawalpindi & Islamabad." />
+  <meta name="author" content="Saima — LuminaForge" />
+  <meta name="theme-color" content="#0B0910" />
+  <link rel="canonical" href="https://lumierestudio.netlify.app/" />
 
-    --font-head: 'Exo', system-ui, sans-serif;
-    --font-mono: 'Roboto Mono', ui-monospace, monospace;
+  <!-- Favicon -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
 
-    --maxw: 1200px;
-    --radius: 16px;
-    --dur: 240ms;
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LuminaForge" />
+  <meta property="og:title" content="LuminaForge — Web Design & Development" />
+  <meta property="og:description" content="Custom, fast, responsive websites that help small businesses look professional online." />
+  <meta property="og:image" content="assets/og-image.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://lumierestudio.netlify.app/" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="LuminaForge — Web Design & Development" />
+  <meta name="twitter:description" content="Custom, fast, responsive websites that help small businesses look professional online." />
+  <meta name="twitter:image" content="assets/og-image.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <!-- Structured data (facts provided by the site owner only) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "LuminaForge",
+    "description": "Web design and development studio for small businesses.",
+    "founder": { "@type": "Person", "name": "Saima" },
+    "areaServed": ["Mardan", "Rawalpindi", "Islamabad", "Pakistan"],
+    "url": "https://lumierestudio.netlify.app/",
+    "knowsAbout": ["Web design", "Web development", "React", "Supabase", "Netlify"]
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: var(--font-head);
-    background: var(--color-bg);
-    color: var(--color-fg);
-    line-height: 1.6;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: none; }
-
-  /* ---------- Starfield ---------- */
-  #stars {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    display: block;
-    background:
-      radial-gradient(1200px 600px at 75% -10%, rgba(59,130,246,0.18), transparent 60%),
-      radial-gradient(900px 500px at 10% 110%, rgba(232,180,87,0.10), transparent 55%),
-      var(--color-bg);
-  }
-  .grid-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background-image:
-      linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 80%);
-  }
-
-  /* ---------- Layout ---------- */
-  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-
-  .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--color-accent-2);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .eyebrow::before {
-    content: "";
-    width: 28px; height: 1px;
-    background: linear-gradient(90deg, var(--color-accent), transparent);
-  }
-
-  /* ---------- Nav ---------- */
-  header.nav {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    backdrop-filter: blur(12px);
-    background: rgba(11,11,16,0.72);
-    border-bottom: 1px solid var(--color-border);
-  }
-  .nav-inner {
-    display: flex; align-items: center; justify-content: space-between;
-    height: 68px;
-  }
-  .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; letter-spacing: 0.04em; }
-  .brand .logo {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: radial-gradient(circle at 32% 30%, #7dd3fc, var(--color-accent) 55%, #1e3a8a 100%);
-    box-shadow: 0 0 18px rgba(59,130,246,0.6);
-  }
-  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--color-muted); }
-  .nav-links a { transition: color var(--dur) var(--ease); }
-  .nav-links a:hover, .nav-links a:focus-visible { color: var(--color-fg); }
-
-  .btn {
-    font-family: var(--font-head);
-    font-size: 14px; font-weight: 600;
-    padding: 11px 22px;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    display: inline-flex; align-items: center; gap: 8px;
-    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
-  }
-  .btn-primary {
-    background: linear-gradient(180deg, #60a5fa, var(--color-accent));
-    color: #04122e;
-    box-shadow: 0 6px 24px rgba(59,130,246,0.35);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59,130,246,0.5); }
-  .btn-ghost { border-color: var(--color-border); color: var(--color-fg); background: rgba(255,255,255,0.02); }
-  .btn-ghost:hover { border-color: var(--color-accent); background: rgba(59,130,246,0.08); }
-
-  :focus-visible { outline: 2px solid var(--color-ring); outline-offset: 3px; border-radius: 6px; }
-
-  /* ---------- Hero ---------- */
-  .hero { position: relative; padding: 96px 0 72px; }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 48px;
-    align-items: center;
-  }
-  .hero h1 {
-    font-size: clamp(2.6rem, 6vw, 4.6rem);
-    font-weight: 700;
-    line-height: 1.03;
-    letter-spacing: -0.02em;
-    margin: 22px 0 20px;
-  }
-  .hero h1 .grad {
-    background: linear-gradient(120deg, #7dd3fc 0%, #3B82F6 45%, #E8B457 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .hero p.lead {
-    font-size: clamp(1rem, 1.6vw, 1.18rem);
-    color: var(--color-muted);
-    max-width: 54ch;
-    margin-bottom: 32px;
-  }
-  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-
-  .stat-row {
-    display: flex; gap: 36px; margin-top: 44px; flex-wrap: wrap;
-    font-family: var(--font-mono);
-  }
-  .stat .num { font-size: 1.9rem; font-weight: 700; color: var(--color-fg); }
-  .stat .lbl { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted); }
-
-  /* ---------- Hero visual: orbiting system ---------- */
-  .system {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    display: grid;
-    place-items: center;
-  }
-  .sun-core {
-    position: absolute;
-    width: 120px; height: 120px; border-radius: 50%;
-    background: radial-gradient(circle at 50% 45%, #fff7e6, #fcd34d 40%, #f59e0b 70%, #b45309 100%);
-    box-shadow: 0 0 60px 12px rgba(245,158,11,0.55), 0 0 120px 40px rgba(245,158,11,0.25);
-  }
-  .orbit {
-    position: absolute;
-    border: 1px dashed rgba(148,163,184,0.22);
-    border-radius: 50%;
-    animation: spin linear infinite;
-  }
-  .orbit .planet {
-    position: absolute;
-    top: 50%; left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-  }
-  .orbit-1 { width: 46%; height: 46%; animation-duration: 14s; }
-  .orbit-2 { width: 70%; height: 70%; animation-duration: 26s; }
-  .orbit-3 { width: 96%; height: 96%; animation-duration: 42s; }
-
-  .p-mercury { width: 20px; height: 20px;
-    background: radial-gradient(circle at 34% 30%, #d8cbb8, #9c8f7e 55%, #5b5348 100%); }
-  .p-venus { width: 30px; height: 30px;
-    background: radial-gradient(circle at 34% 30%, #ffe6a8, var(--venus) 50%, #a9691f 100%);
-    box-shadow: 0 0 18px rgba(232,180,87,0.5); }
-  .p-earth { width: 34px; height: 34px;
-    background: radial-gradient(circle at 34% 30%, #7dd3fc, var(--earth) 42%, #14532d 78%, #0b3b66 100%);
-    box-shadow: 0 0 20px rgba(59,130,246,0.55); }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ---------- Section header ---------- */
-  section { padding: 84px 0; }
-  .sec-head { max-width: 640px; margin: 0 auto 56px; text-align: center; }
-  .sec-head h2 { font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 700; letter-spacing: -0.01em; margin: 16px 0 14px; }
-  .sec-head p { color: var(--color-muted); font-size: 1.05rem; }
-
-  /* ---------- Planet cards ---------- */
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .card {
-    position: relative;
-    background: linear-gradient(180deg, var(--color-card), var(--color-card-2));
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    padding: 32px 28px 28px;
-    overflow: hidden;
-    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-  }
-  .card::before {
-    content: "";
-    position: absolute; inset: 0;
-    background: radial-gradient(420px 180px at 80% -10%, var(--tint), transparent 70%);
-    opacity: 0.5;
-    pointer-events: none;
-  }
-  .card:hover { transform: translateY(-6px); border-color: var(--tint-solid); box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
-
-  .planet-viz {
-    width: 108px; height: 108px; border-radius: 50%;
-    margin-bottom: 24px;
-    position: relative;
-    animation: float 7s ease-in-out infinite;
-  }
-  .viz-earth { background: radial-gradient(circle at 33% 28%, #7dd3fc 0%, #3B82F6 40%, #1d4ed8 60%, #0f3d2e 82%, #0b3b66 100%);
-    box-shadow: 0 0 34px rgba(59,130,246,0.55), inset -14px -10px 30px rgba(0,0,0,0.55); }
-  .viz-mercury { background: radial-gradient(circle at 33% 28%, #ded2c0 0%, #b7a99a 45%, #8a7d6e 68%, #4f473d 100%);
-    box-shadow: 0 0 26px rgba(183,169,154,0.35), inset -14px -10px 30px rgba(0,0,0,0.6); }
-  .viz-venus { background: radial-gradient(circle at 33% 28%, #fff0c9 0%, #E8B457 44%, #d98a2b 66%, #8a4d16 100%);
-    box-shadow: 0 0 34px rgba(232,180,87,0.5), inset -14px -10px 30px rgba(0,0,0,0.5); }
-
-  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-  .card .tag {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--tint-solid);
-  }
-  .card h3 { font-size: 1.7rem; font-weight: 700; margin: 6px 0 10px; }
-  .card p.desc { color: var(--color-muted); font-size: 0.96rem; margin-bottom: 22px; min-height: 96px; }
-
-  .facts { list-style: none; display: grid; gap: 12px; font-family: var(--font-mono); font-size: 13px; }
-  .facts li { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); }
-  .facts li:last-child { border-bottom: 0; padding-bottom: 0; }
-  .facts .k { color: var(--color-muted); }
-  .facts .v { color: var(--color-fg); font-weight: 500; text-align: right; }
-
-  .card-earth   { --tint: rgba(59,130,246,0.18);  --tint-solid: #3B82F6; }
-  .card-mercury { --tint: rgba(183,169,154,0.16); --tint-solid: #B7A99A; }
-  .card-venus   { --tint: rgba(232,180,87,0.18);  --tint-solid: #E8B457; }
-
-  /* ---------- Compare strip ---------- */
-  .compare { border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: rgba(255,255,255,0.015); }
-  .compare-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center; }
-  .compare .item .num { font-family: var(--font-mono); font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; color: var(--color-accent-2); }
-  .compare .item .lbl { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-muted); margin-top: 6px; }
-
-  /* ---------- CTA ---------- */
-  .cta-box {
-    position: relative;
-    text-align: center;
-    border: 1px solid var(--color-border);
-    border-radius: 24px;
-    padding: 64px 32px;
-    background:
-      radial-gradient(600px 240px at 50% 0%, rgba(59,130,246,0.16), transparent 70%),
-      linear-gradient(180deg, var(--color-card), var(--color-card-2));
-    overflow: hidden;
-  }
-  .cta-box h2 { font-size: clamp(2rem, 4.4vw, 3rem); font-weight: 700; margin-bottom: 16px; }
-  .cta-box p { color: var(--color-muted); max-width: 52ch; margin: 0 auto 32px; }
-
-  /* ---------- Footer ---------- */
-  footer { border-top: 1px solid var(--color-border); padding: 40px 0; }
-  .foot-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; color: var(--color-muted); font-size: 13px; font-family: var(--font-mono); }
-
-  /* ---------- Reveal on scroll ---------- */
-  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
-  .reveal.in { opacity: 1; transform: none; }
-
-  /* ---------- Responsive ---------- */
-  @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-    .system { max-width: 420px; margin: 0 auto; width: 100%; }
-    .cards { grid-template-columns: 1fr; }
-    .compare-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
-    .nav-links { display: none; }
-    .card p.desc { min-height: 0; }
-  }
-  @media (max-width: 480px) {
-    .hero { padding: 64px 0 48px; }
-    section { padding: 64px 0; }
-    .stat-row { gap: 24px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; scroll-behavior: auto !important; }
-    .reveal { opacity: 1; transform: none; transition: none; }
-  }
-</style>
+  </script>
 </head>
 <body>
-  <canvas id="stars"></canvas>
-  <div class="grid-overlay" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- NAV -->
-  <header class="nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="#top" aria-label="Terra Trio home">
-        <span class="logo" aria-hidden="true"></span>
-        <span>TERRA&nbsp;TRIO</span>
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header" id="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="LuminaForge home">
+        <img class="mark" src="assets/favicon.svg" alt="" width="34" height="34" />
+        <span class="name">Lumina<b>Forge</b></span>
       </a>
-      <nav class="nav-links" aria-label="Primary">
-        <a href="#worlds">Worlds</a>
-        <a href="#compare">Compare</a>
-        <a href="#earth">Earth</a>
-        <a href="#mercury">Mercury</a>
-        <a href="#venus">Venus</a>
-      </nav>
-      <a class="btn btn-primary" href="#worlds">Explore worlds</a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-controls="nav-menu" aria-expanded="false"></button>
+
+      <div class="nav-menu" id="nav-menu">
+        <ul class="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#why">Why me</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a class="btn btn-primary btn-sm" href="#contact">Let's talk</a>
+      </div>
     </div>
   </header>
 
-  <!-- HERO -->
-  <main id="top">
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <span class="eyebrow">Inner Solar System · Rocky Worlds</span>
-        <h1>Three worlds.<br /><span class="grad">One blue home.</span></h1>
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <span class="status"><span class="dot" aria-hidden="true"></span> Available for new projects</span>
+        <h1>I build websites that make small businesses look <em>serious</em>.</h1>
         <p class="lead">
-          Journey across the sun-facing frontier of the solar system — from scorched, cratered
-          <strong>Mercury</strong>, through cloud-shrouded <strong>Venus</strong>, to the only
-          <strong>blue planet</strong> we call home: <strong>Earth</strong>.
+          I'm Saima — a web designer &amp; developer behind LuminaForge. I design and build
+          clean, fast, custom websites that help local businesses win trust and turn visitors
+          into customers. No templates, no clutter — just work that feels made for you.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#worlds">Begin the tour</a>
-          <a class="btn btn-ghost" href="#compare">Compare the trio</a>
+          <a class="btn btn-primary" href="#contact">Let's Build Your Website <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-ghost" href="#work">View my work</a>
         </div>
-        <div class="stat-row">
-          <div class="stat"><div class="num">3</div><div class="lbl">Rocky worlds</div></div>
-          <div class="stat"><div class="num">1</div><div class="lbl">With life</div></div>
-          <div class="stat"><div class="num">462°C</div><div class="lbl">Hottest surface</div></div>
-        </div>
-      </div>
-
-      <div class="system" aria-hidden="true">
-        <div class="sun-core"></div>
-        <div class="orbit orbit-1"><div class="planet p-mercury"></div></div>
-        <div class="orbit orbit-2"><div class="planet p-venus"></div></div>
-        <div class="orbit orbit-3"><div class="planet p-earth"></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WORLDS -->
-  <section id="worlds">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="eyebrow" style="justify-content:center;">Meet the worlds</span>
-        <h2>Earth, Mercury &amp; Venus</h2>
-        <p>Neighbours born from the same solar nebula, yet each tells a wildly different story of fire, rock, and sky.</p>
-      </div>
-
-      <div class="cards">
-        <!-- EARTH -->
-        <article id="earth" class="card card-earth reveal">
-          <div class="planet-viz viz-earth" role="img" aria-label="Earth, the blue planet"></div>
-          <span class="tag">Planet 03 · Terra</span>
-          <h3>Earth</h3>
-          <p class="desc">The blue planet — the only known world with liquid oceans, breathable air, and life. A restless surface of drifting continents beneath a protective magnetic shield.</p>
-          <ul class="facts">
-            <li><span class="k">Diameter</span><span class="v">12,742 km</span></li>
-            <li><span class="k">Day length</span><span class="v">24 hours</span></li>
-            <li><span class="k">Year length</span><span class="v">365.25 days</span></li>
-            <li><span class="k">Avg. surface</span><span class="v">15 °C</span></li>
-            <li><span class="k">Moons</span><span class="v">1 (Luna)</span></li>
-          </ul>
-        </article>
-
-        <!-- MERCURY -->
-        <article id="mercury" class="card card-mercury reveal">
-          <div class="planet-viz viz-mercury" role="img" aria-label="Mercury, the smallest and swiftest planet"></div>
-          <span class="tag">Planet 01 · Swift</span>
-          <h3>Mercury</h3>
-          <p class="desc">The smallest planet and the fastest runner around the sun. A cratered, airless world of brutal extremes — searing days and frozen nights, with ice hiding in its polar shadows.</p>
-          <ul class="facts">
-            <li><span class="k">Diameter</span><span class="v">4,879 km</span></li>
-            <li><span class="k">Day length</span><span class="v">59 Earth days</span></li>
-            <li><span class="k">Year length</span><span class="v">88 Earth days</span></li>
-            <li><span class="k">Temp. range</span><span class="v">−173 to 427 °C</span></li>
-            <li><span class="k">Moons</span><span class="v">0</span></li>
-          </ul>
-        </article>
-
-        <!-- VENUS -->
-        <article id="venus" class="card card-venus reveal">
-          <div class="planet-viz viz-venus" role="img" aria-label="Venus, the shrouded planet"></div>
-          <span class="tag">Planet 02 · Shrouded</span>
-          <h3>Venus</h3>
-          <p class="desc">Earth's fiery twin in size, but a runaway greenhouse in nature. A thick carbon-dioxide sky and sulphuric-acid clouds make it the hottest world in the solar system.</p>
-          <ul class="facts">
-            <li><span class="k">Diameter</span><span class="v">12,104 km</span></li>
-            <li><span class="k">Day length</span><span class="v">243 Earth days</span></li>
-            <li><span class="k">Year length</span><span class="v">225 Earth days</span></li>
-            <li><span class="k">Avg. surface</span><span class="v">462 °C</span></li>
-            <li><span class="k">Moons</span><span class="v">0</span></li>
-          </ul>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPARE -->
-  <section id="compare" class="compare">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="eyebrow" style="justify-content:center;">By the numbers</span>
-        <h2>How they stack up</h2>
-        <p>Three neighbours, three extremes. A quick look at what sets these rocky worlds apart.</p>
-      </div>
-      <div class="compare-grid">
-        <div class="item reveal"><div class="num">57.9M km</div><div class="lbl">Mercury → Sun</div></div>
-        <div class="item reveal"><div class="num">108.2M km</div><div class="lbl">Venus → Sun</div></div>
-        <div class="item reveal"><div class="num">149.6M km</div><div class="lbl">Earth → Sun</div></div>
-        <div class="item reveal"><div class="num">96% CO₂</div><div class="lbl">Venus atmosphere</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section>
-    <div class="wrap">
-      <div class="cta-box reveal">
-        <span class="eyebrow" style="justify-content:center;">Ready for launch</span>
-        <h2>Chart your course through the inner planets</h2>
-        <p>From the blue oceans of Earth to the acid skies of Venus and the cratered plains of Mercury — the tour starts wherever you are.</p>
-        <div class="hero-actions" style="justify-content:center;">
-          <a class="btn btn-primary" href="#worlds">Start exploring</a>
-          <a class="btn btn-ghost" href="#top">Back to top</a>
+        <div class="hero-meta">
+          <div class="item"><div class="k">Design + Build</div><div class="v">End to end</div></div>
+          <div class="item"><div class="k">Mobile-first</div><div class="v">Every screen</div></div>
+          <div class="item"><div class="k">Direct</div><div class="v">Work with me, not an agency</div></div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- ===================== ABOUT ===================== -->
+    <section class="section" id="about">
+      <div class="wrap about-grid">
+        <figure class="about-portrait reveal">
+          <!-- Drop a portrait at assets/projects/portrait.jpg to replace this placeholder -->
+          <div class="ph-figure" role="img" aria-label="Portrait of Saima — add photo at assets/portrait.jpg">
+            <div><div class="initial">S</div><div class="hint">Add your photo</div></div>
+          </div>
+          <figcaption>Saima — Founder, LuminaForge</figcaption>
+        </figure>
+
+        <div class="about-body reveal">
+          <span class="eyebrow">About me</span>
+          <h2>A real person behind the code — not an anonymous agency.</h2>
+          <p>
+            I'm <span class="hl">Saima</span>, a web designer and developer based in
+            <span class="hl">Mardan, KPK</span>, working with clients across
+            <span class="hl">Rawalpindi and Islamabad</span>. I studied
+            <span class="hl">BS Computer Science at Abdul Wali Khan University Mardan</span>,
+            and I run LuminaForge as a small, focused studio.
+          </p>
+          <p>
+            I care about the details most templates skip — typography, spacing, how a page
+            feels on a phone, how fast it loads. Whether you need a simple presence or a
+            full build with a backend and admin dashboard, I handle it end to end and keep
+            you in the loop the whole way.
+          </p>
+          <div class="about-tags">
+            <span class="tag accent">HTML</span>
+            <span class="tag accent">CSS</span>
+            <span class="tag accent">JavaScript</span>
+            <span class="tag accent">React</span>
+            <span class="tag accent">Supabase</span>
+            <span class="tag accent">Netlify</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SERVICES ===================== -->
+    <section class="section" id="services">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">What I do</span>
+          <h2>Services built around your business.</h2>
+          <p>Everything you need to get online and look the part — designed and built by one person who owns the result.</p>
+        </div>
+        <div class="services-grid" id="services-grid"><!-- rendered from data.js --></div>
+      </div>
+    </section>
+
+    <!-- ===================== WORK / PORTFOLIO ===================== -->
+    <section class="section" id="work">
+      <div class="wrap">
+        <div class="portfolio-head">
+          <div class="section-head" style="margin-bottom:0">
+            <span class="eyebrow">Selected work</span>
+            <h2>Websites, not screenshots of a template.</h2>
+            <p>Real builds you can open and click through. The quality of the work is the proof.</p>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="#contact">Start a project</a>
+        </div>
+        <div class="projects-grid" id="projects-grid">
+          <p class="project-status">Loading projects…</p>
+        </div>
+        <noscript>
+          <p class="project-status">Enable JavaScript to view the interactive project gallery, or
+            <a href="https://lumierestudio.netlify.app" style="color:var(--violet)">visit the studio site</a>.</p>
+        </noscript>
+      </div>
+    </section>
+
+    <!-- ===================== PROCESS ===================== -->
+    <section class="section" id="process">
+      <div class="wrap">
+        <div class="section-head center">
+          <span class="eyebrow center">How it works</span>
+          <h2>A calm, clear process.</h2>
+          <p>Four steps, no guesswork. You always know what's happening and what's next.</p>
+        </div>
+        <div class="process-grid" id="process-grid"><!-- rendered from data.js --></div>
+      </div>
+    </section>
+
+    <!-- ===================== WHY ===================== -->
+    <section class="section" id="why">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Why work with me</span>
+          <h2>What you actually get.</h2>
+          <p>The difference between a site that exists and a site that earns you trust.</p>
+        </div>
+        <div class="why-grid" id="why-grid"><!-- rendered from data.js --></div>
+      </div>
+    </section>
+
+    <!-- ===================== TESTIMONIALS ===================== -->
+    <section class="section" id="testimonials">
+      <div class="wrap">
+        <div class="section-head center">
+          <span class="eyebrow center">Trust</span>
+          <h2>In clients' words.</h2>
+          <p>Real quotes go here as projects wrap up. Until then, these are placeholders — never invented reviews.</p>
+        </div>
+        <div class="testimonials-grid" id="testimonials-grid"><!-- rendered from data.js --></div>
+        <p class="trust-note">Placeholder quotes shown for layout — replace them in <code>assets/js/data.js</code>.</p>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section class="section" id="contact">
+      <div class="wrap contact-grid">
+        <div class="contact-intro reveal">
+          <span class="eyebrow">Contact</span>
+          <h2>Let's Build Your Website.</h2>
+          <p>Tell me a little about your business and what you need. I reply personally, usually within a day or two.</p>
+          <div class="contact-methods">
+            <a class="contact-method" href="#" data-email>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></svg></span>
+              <span><span class="k">Email</span><br><span class="v" id="c-email">email</span></span>
+            </a>
+            <a class="contact-method" href="#" target="_blank" rel="noopener" data-whatsapp>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.6-1.2A9 9 0 1 0 12 3Z"/></svg></span>
+              <span><span class="k">WhatsApp</span><br><span class="v" id="c-whatsapp">chat</span></span>
+            </a>
+            <div class="contact-method" style="cursor:default">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+              <span><span class="k">Based in</span><br><span class="v" id="c-location">location</span></span>
+            </div>
+          </div>
+        </div>
+
+        <form class="contact-form reveal" id="contact-form" novalidate>
+          <div class="field">
+            <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="name" name="name" autocomplete="name" placeholder="Your name" required />
+            <span class="error" role="alert">Please tell me your name.</span>
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required />
+            <span class="error" role="alert">Please enter a valid email.</span>
+          </div>
+          <div class="field">
+            <label for="message">Project details <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="message" name="message" placeholder="What kind of business is it, and what do you need?" required></textarea>
+            <span class="error" role="alert">A little more detail helps.</span>
+          </div>
+          <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+            Send message
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+    </section>
   </main>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="wrap foot-inner">
-      <span>© 2026 Terra Trio · A rocky-worlds showcase</span>
-      <span>Earth · Mercury · Venus</span>
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="#top" aria-label="LuminaForge home">
+            <img class="mark" src="assets/favicon.svg" alt="" width="34" height="34" />
+            <span class="name">Lumina<b>Forge</b></span>
+          </a>
+          <p>Web design &amp; development for small businesses that want to be taken seriously online.</p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Explore</h4>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#work">Work</a>
+            <a href="#process">Process</a>
+          </div>
+          <div class="footer-col">
+            <h4>Connect</h4>
+            <a href="#" data-email>Email</a>
+            <a href="#" target="_blank" rel="noopener" data-whatsapp>WhatsApp</a>
+            <a href="#" target="_blank" rel="noopener" data-studio>Studio site</a>
+            <a href="#" target="_blank" rel="noopener" data-github>GitHub</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year">2026</span> LuminaForge · Built by Saima</span>
+        <span>Mardan, KPK · Pakistan</span>
+      </div>
     </div>
   </footer>
 
-<script>
-  // Starfield — canvas twinkle, respects reduced motion
-  (function () {
-    var canvas = document.getElementById('stars');
-    var ctx = canvas.getContext('2d');
-    var stars = [];
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var w, h, dpr;
-
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.width = Math.floor(innerWidth * dpr);
-      h = canvas.height = Math.floor(innerHeight * dpr);
-      canvas.style.width = innerWidth + 'px';
-      canvas.style.height = innerHeight + 'px';
-      var count = Math.floor((innerWidth * innerHeight) / 6500);
-      stars = [];
-      for (var i = 0; i < count; i++) {
-        stars.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: (Math.random() * 1.2 + 0.3) * dpr,
-          a: Math.random() * 0.6 + 0.2,
-          tw: Math.random() * 0.02 + 0.004,
-          dir: Math.random() > 0.5 ? 1 : -1
-        });
-      }
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (var i = 0; i < stars.length; i++) {
-        var s = stars[i];
-        if (!reduce) {
-          s.a += s.tw * s.dir;
-          if (s.a > 0.9 || s.a < 0.15) s.dir *= -1;
-        }
-        ctx.globalAlpha = s.a;
-        ctx.fillStyle = i % 9 === 0 ? '#7dd3fc' : '#ffffff';
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      if (!reduce) requestAnimationFrame(draw);
-    }
-
-    resize();
-    draw();
-    var t;
-    addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { resize(); if (reduce) draw(); }, 150); });
-  })();
-
-  // Scroll reveal
-  (function () {
-    var els = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      els.forEach(function (el) { el.classList.add('in'); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.15 });
-    els.forEach(function (el, i) { el.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(el); });
-  })();
-</script>
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terra Trio — Earth, Mercury &amp; Venus</title>
+<meta name="description" content="An immersive tour of the inner solar system's rocky worlds: the blue planet Earth, swift Mercury, and shrouded Venus." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --color-primary: #F8FAFC;
+    --color-accent: #3B82F6;
+    --color-accent-2: #38BDF8;
+    --color-bg: #0B0B10;
+    --color-fg: #F8FAFC;
+    --color-card: #131319;
+    --color-card-2: #1A1A22;
+    --color-muted: #94A3B8;
+    --color-border: #232333;
+    --color-ring: #3B82F6;
+
+    --earth: #3B82F6;
+    --mercury: #B7A99A;
+    --venus: #E8B457;
+
+    --font-head: 'Exo', system-ui, sans-serif;
+    --font-mono: 'Roboto Mono', ui-monospace, monospace;
+
+    --maxw: 1200px;
+    --radius: 16px;
+    --dur: 240ms;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-head);
+    background: var(--color-bg);
+    color: var(--color-fg);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Starfield ---------- */
+  #stars {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    display: block;
+    background:
+      radial-gradient(1200px 600px at 75% -10%, rgba(59,130,246,0.18), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, rgba(232,180,87,0.10), transparent 55%),
+      var(--color-bg);
+  }
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 80%);
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-accent-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 28px; height: 1px;
+    background: linear-gradient(90deg, var(--color-accent), transparent);
+  }
+
+  /* ---------- Nav ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    backdrop-filter: blur(12px);
+    background: rgba(11,11,16,0.72);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; letter-spacing: 0.04em; }
+  .brand .logo {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #7dd3fc, var(--color-accent) 55%, #1e3a8a 100%);
+    box-shadow: 0 0 18px rgba(59,130,246,0.6);
+  }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--color-muted); }
+  .nav-links a { transition: color var(--dur) var(--ease); }
+  .nav-links a:hover, .nav-links a:focus-visible { color: var(--color-fg); }
+
+  .btn {
+    font-family: var(--font-head);
+    font-size: 14px; font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+  .btn-primary {
+    background: linear-gradient(180deg, #60a5fa, var(--color-accent));
+    color: #04122e;
+    box-shadow: 0 6px 24px rgba(59,130,246,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59,130,246,0.5); }
+  .btn-ghost { border-color: var(--color-border); color: var(--color-fg); background: rgba(255,255,255,0.02); }
+  .btn-ghost:hover { border-color: var(--color-accent); background: rgba(59,130,246,0.08); }
+
+  :focus-visible { outline: 2px solid var(--color-ring); outline-offset: 3px; border-radius: 6px; }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; padding: 96px 0 72px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 6vw, 4.6rem);
+    font-weight: 700;
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+    margin: 22px 0 20px;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(120deg, #7dd3fc 0%, #3B82F6 45%, #E8B457 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lead {
+    font-size: clamp(1rem, 1.6vw, 1.18rem);
+    color: var(--color-muted);
+    max-width: 54ch;
+    margin-bottom: 32px;
+  }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .stat-row {
+    display: flex; gap: 36px; margin-top: 44px; flex-wrap: wrap;
+    font-family: var(--font-mono);
+  }
+  .stat .num { font-size: 1.9rem; font-weight: 700; color: var(--color-fg); }
+  .stat .lbl { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted); }
+
+  /* ---------- Hero visual: orbiting system ---------- */
+  .system {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+  }
+  .sun-core {
+    position: absolute;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%, #fff7e6, #fcd34d 40%, #f59e0b 70%, #b45309 100%);
+    box-shadow: 0 0 60px 12px rgba(245,158,11,0.55), 0 0 120px 40px rgba(245,158,11,0.25);
+  }
+  .orbit {
+    position: absolute;
+    border: 1px dashed rgba(148,163,184,0.22);
+    border-radius: 50%;
+    animation: spin linear infinite;
+  }
+  .orbit .planet {
+    position: absolute;
+    top: 50%; left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+  .orbit-1 { width: 46%; height: 46%; animation-duration: 14s; }
+  .orbit-2 { width: 70%; height: 70%; animation-duration: 26s; }
+  .orbit-3 { width: 96%; height: 96%; animation-duration: 42s; }
+
+  .p-mercury { width: 20px; height: 20px;
+    background: radial-gradient(circle at 34% 30%, #d8cbb8, #9c8f7e 55%, #5b5348 100%); }
+  .p-venus { width: 30px; height: 30px;
+    background: radial-gradient(circle at 34% 30%, #ffe6a8, var(--venus) 50%, #a9691f 100%);
+    box-shadow: 0 0 18px rgba(232,180,87,0.5); }
+  .p-earth { width: 34px; height: 34px;
+    background: radial-gradient(circle at 34% 30%, #7dd3fc, var(--earth) 42%, #14532d 78%, #0b3b66 100%);
+    box-shadow: 0 0 20px rgba(59,130,246,0.55); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Section header ---------- */
+  section { padding: 84px 0; }
+  .sec-head { max-width: 640px; margin: 0 auto 56px; text-align: center; }
+  .sec-head h2 { font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 700; letter-spacing: -0.01em; margin: 16px 0 14px; }
+  .sec-head p { color: var(--color-muted); font-size: 1.05rem; }
+
+  /* ---------- Planet cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .card {
+    position: relative;
+    background: linear-gradient(180deg, var(--color-card), var(--color-card-2));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 32px 28px 28px;
+    overflow: hidden;
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .card::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(420px 180px at 80% -10%, var(--tint), transparent 70%);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .card:hover { transform: translateY(-6px); border-color: var(--tint-solid); box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
+
+  .planet-viz {
+    width: 108px; height: 108px; border-radius: 50%;
+    margin-bottom: 24px;
+    position: relative;
+    animation: float 7s ease-in-out infinite;
+  }
+  .viz-earth { background: radial-gradient(circle at 33% 28%, #7dd3fc 0%, #3B82F6 40%, #1d4ed8 60%, #0f3d2e 82%, #0b3b66 100%);
+    box-shadow: 0 0 34px rgba(59,130,246,0.55), inset -14px -10px 30px rgba(0,0,0,0.55); }
+  .viz-mercury { background: radial-gradient(circle at 33% 28%, #ded2c0 0%, #b7a99a 45%, #8a7d6e 68%, #4f473d 100%);
+    box-shadow: 0 0 26px rgba(183,169,154,0.35), inset -14px -10px 30px rgba(0,0,0,0.6); }
+  .viz-venus { background: radial-gradient(circle at 33% 28%, #fff0c9 0%, #E8B457 44%, #d98a2b 66%, #8a4d16 100%);
+    box-shadow: 0 0 34px rgba(232,180,87,0.5), inset -14px -10px 30px rgba(0,0,0,0.5); }
+
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+  .card .tag {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--tint-solid);
+  }
+  .card h3 { font-size: 1.7rem; font-weight: 700; margin: 6px 0 10px; }
+  .card p.desc { color: var(--color-muted); font-size: 0.96rem; margin-bottom: 22px; min-height: 96px; }
+
+  .facts { list-style: none; display: grid; gap: 12px; font-family: var(--font-mono); font-size: 13px; }
+  .facts li { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); }
+  .facts li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .facts .k { color: var(--color-muted); }
+  .facts .v { color: var(--color-fg); font-weight: 500; text-align: right; }
+
+  .card-earth   { --tint: rgba(59,130,246,0.18);  --tint-solid: #3B82F6; }
+  .card-mercury { --tint: rgba(183,169,154,0.16); --tint-solid: #B7A99A; }
+  .card-venus   { --tint: rgba(232,180,87,0.18);  --tint-solid: #E8B457; }
+
+  /* ---------- Compare strip ---------- */
+  .compare { border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: rgba(255,255,255,0.015); }
+  .compare-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center; }
+  .compare .item .num { font-family: var(--font-mono); font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; color: var(--color-accent-2); }
+  .compare .item .lbl { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-muted); margin-top: 6px; }
+
+  /* ---------- CTA ---------- */
+  .cta-box {
+    position: relative;
+    text-align: center;
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    padding: 64px 32px;
+    background:
+      radial-gradient(600px 240px at 50% 0%, rgba(59,130,246,0.16), transparent 70%),
+      linear-gradient(180deg, var(--color-card), var(--color-card-2));
+    overflow: hidden;
+  }
+  .cta-box h2 { font-size: clamp(2rem, 4.4vw, 3rem); font-weight: 700; margin-bottom: 16px; }
+  .cta-box p { color: var(--color-muted); max-width: 52ch; margin: 0 auto 32px; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--color-border); padding: 40px 0; }
+  .foot-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; color: var(--color-muted); font-size: 13px; font-family: var(--font-mono); }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .system { max-width: 420px; margin: 0 auto; width: 100%; }
+    .cards { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
+    .nav-links { display: none; }
+    .card p.desc { min-height: 0; }
+  }
+  @media (max-width: 480px) {
+    .hero { padding: 64px 0 48px; }
+    section { padding: 64px 0; }
+    .stat-row { gap: 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; scroll-behavior: auto !important; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Terra Trio home">
+        <span class="logo" aria-hidden="true"></span>
+        <span>TERRA&nbsp;TRIO</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#worlds">Worlds</a>
+        <a href="#compare">Compare</a>
+        <a href="#earth">Earth</a>
+        <a href="#mercury">Mercury</a>
+        <a href="#venus">Venus</a>
+      </nav>
+      <a class="btn btn-primary" href="#worlds">Explore worlds</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Inner Solar System · Rocky Worlds</span>
+        <h1>Three worlds.<br /><span class="grad">One blue home.</span></h1>
+        <p class="lead">
+          Journey across the sun-facing frontier of the solar system — from scorched, cratered
+          <strong>Mercury</strong>, through cloud-shrouded <strong>Venus</strong>, to the only
+          <strong>blue planet</strong> we call home: <strong>Earth</strong>.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#worlds">Begin the tour</a>
+          <a class="btn btn-ghost" href="#compare">Compare the trio</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num">3</div><div class="lbl">Rocky worlds</div></div>
+          <div class="stat"><div class="num">1</div><div class="lbl">With life</div></div>
+          <div class="stat"><div class="num">462°C</div><div class="lbl">Hottest surface</div></div>
+        </div>
+      </div>
+
+      <div class="system" aria-hidden="true">
+        <div class="sun-core"></div>
+        <div class="orbit orbit-1"><div class="planet p-mercury"></div></div>
+        <div class="orbit orbit-2"><div class="planet p-venus"></div></div>
+        <div class="orbit orbit-3"><div class="planet p-earth"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORLDS -->
+  <section id="worlds">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow" style="justify-content:center;">Meet the worlds</span>
+        <h2>Earth, Mercury &amp; Venus</h2>
+        <p>Neighbours born from the same solar nebula, yet each tells a wildly different story of fire, rock, and sky.</p>
+      </div>
+
+      <div class="cards">
+        <!-- EARTH -->
+        <article id="earth" class="card card-earth reveal">
+          <div class="planet-viz viz-earth" role="img" aria-label="Earth, the blue planet"></div>
+          <span class="tag">Planet 03 · Terra</span>
+          <h3>Earth</h3>
+          <p class="desc">The blue planet — the only known world with liquid oceans, breathable air, and life. A restless surface of drifting continents beneath a protective magnetic shield.</p>
+          <ul class="facts">
+            <li><span class="k">Diameter</span><span class="v">12,742 km</span></li>
+            <li><span class="k">Day length</span><span class="v">24 hours</span></li>
+            <li><span class="k">Year length</span><span class="v">365.25 days</span></li>
+            <li><span class="k">Avg. surface</span><span class="v">15 °C</span></li>
+            <li><span class="k">Moons</span><span class="v">1 (Luna)</span></li>
+          </ul>
+        </article>
+
+        <!-- MERCURY -->
+        <article id="mercury" class="card card-mercury reveal">
+          <div class="planet-viz viz-mercury" role="img" aria-label="Mercury, the smallest and swiftest planet"></div>
+          <span class="tag">Planet 01 · Swift</span>
+          <h3>Mercury</h3>
+          <p class="desc">The smallest planet and the fastest runner around the sun. A cratered, airless world of brutal extremes — searing days and frozen nights, with ice hiding in its polar shadows.</p>
+          <ul class="facts">
+            <li><span class="k">Diameter</span><span class="v">4,879 km</span></li>
+            <li><span class="k">Day length</span><span class="v">59 Earth days</span></li>
+            <li><span class="k">Year length</span><span class="v">88 Earth days</span></li>
+            <li><span class="k">Temp. range</span><span class="v">−173 to 427 °C</span></li>
+            <li><span class="k">Moons</span><span class="v">0</span></li>
+          </ul>
+        </article>
+
+        <!-- VENUS -->
+        <article id="venus" class="card card-venus reveal">
+          <div class="planet-viz viz-venus" role="img" aria-label="Venus, the shrouded planet"></div>
+          <span class="tag">Planet 02 · Shrouded</span>
+          <h3>Venus</h3>
+          <p class="desc">Earth's fiery twin in size, but a runaway greenhouse in nature. A thick carbon-dioxide sky and sulphuric-acid clouds make it the hottest world in the solar system.</p>
+          <ul class="facts">
+            <li><span class="k">Diameter</span><span class="v">12,104 km</span></li>
+            <li><span class="k">Day length</span><span class="v">243 Earth days</span></li>
+            <li><span class="k">Year length</span><span class="v">225 Earth days</span></li>
+            <li><span class="k">Avg. surface</span><span class="v">462 °C</span></li>
+            <li><span class="k">Moons</span><span class="v">0</span></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section id="compare" class="compare">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow" style="justify-content:center;">By the numbers</span>
+        <h2>How they stack up</h2>
+        <p>Three neighbours, three extremes. A quick look at what sets these rocky worlds apart.</p>
+      </div>
+      <div class="compare-grid">
+        <div class="item reveal"><div class="num">57.9M km</div><div class="lbl">Mercury → Sun</div></div>
+        <div class="item reveal"><div class="num">108.2M km</div><div class="lbl">Venus → Sun</div></div>
+        <div class="item reveal"><div class="num">149.6M km</div><div class="lbl">Earth → Sun</div></div>
+        <div class="item reveal"><div class="num">96% CO₂</div><div class="lbl">Venus atmosphere</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="wrap">
+      <div class="cta-box reveal">
+        <span class="eyebrow" style="justify-content:center;">Ready for launch</span>
+        <h2>Chart your course through the inner planets</h2>
+        <p>From the blue oceans of Earth to the acid skies of Venus and the cratered plains of Mercury — the tour starts wherever you are.</p>
+        <div class="hero-actions" style="justify-content:center;">
+          <a class="btn btn-primary" href="#worlds">Start exploring</a>
+          <a class="btn btn-ghost" href="#top">Back to top</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap foot-inner">
+      <span>© 2026 Terra Trio · A rocky-worlds showcase</span>
+      <span>Earth · Mercury · Venus</span>
+    </div>
+  </footer>
+
+<script>
+  // Starfield — canvas twinkle, respects reduced motion
+  (function () {
+    var canvas = document.getElementById('stars');
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var w, h, dpr;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.width = Math.floor(innerWidth * dpr);
+      h = canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      var count = Math.floor((innerWidth * innerHeight) / 6500);
+      stars = [];
+      for (var i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: (Math.random() * 1.2 + 0.3) * dpr,
+          a: Math.random() * 0.6 + 0.2,
+          tw: Math.random() * 0.02 + 0.004,
+          dir: Math.random() > 0.5 ? 1 : -1
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        if (!reduce) {
+          s.a += s.tw * s.dir;
+          if (s.a > 0.9 || s.a < 0.15) s.dir *= -1;
+        }
+        ctx.globalAlpha = s.a;
+        ctx.fillStyle = i % 9 === 0 ? '#7dd3fc' : '#ffffff';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (!reduce) requestAnimationFrame(draw);
+    }
+
+    resize();
+    draw();
+    var t;
+    addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { resize(); if (reduce) draw(); }, 150); });
+  })();
+
+  // Scroll reveal
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (el, i) { el.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(el); });
+  })();
+</script>
+</body>
+</html>
