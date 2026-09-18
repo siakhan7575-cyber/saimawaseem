@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Saima — Interactive 3D Experience | LuminaForge</title>
+  <meta name="description" content="An interactive 3D experience by Saima — web designer & developer at LuminaForge. Drag to explore." />
+  <meta name="theme-color" content="#0B0910" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Saima — Interactive 3D Experience" />
+  <meta property="og:description" content="Web designer & developer at LuminaForge. Drag to explore." />
+  <meta property="og:image" content="../assets/og-image.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg:#0B0910; --fg:#F4F2F8; --muted:#A79FB8; --muted-2:#746C86;
+      --violet:#A78BFA; --violet-bright:#B79CFF; --gold:#E4C58C; --border:#241E33;
+      --font-display:'Cormorant',Georgia,serif; --font-sans:'Montserrat',system-ui,sans-serif;
+      --ease:cubic-bezier(0.22,0.61,0.36,1);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:var(--font-sans); background:var(--bg); color:var(--fg);
+      overflow-x:hidden; -webkit-font-smoothing:antialiased; line-height:1.6;
+    }
+    a{color:inherit;text-decoration:none}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:8px}
+
+    /* Ambient wash + canvas */
+    body::before{
+      content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:
+        radial-gradient(1000px 700px at 78% 12%,rgba(109,40,217,0.28),transparent 60%),
+        radial-gradient(800px 600px at 8% 90%,rgba(76,29,149,0.18),transparent 60%);
+    }
+    #scene{position:fixed;inset:0;z-index:1;display:block;touch-action:none;cursor:grab}
+    #scene:active{cursor:grabbing}
+    body.no3d #scene{display:none}
+
+    /* Loading */
+    #loader{
+      position:fixed;inset:0;z-index:20;display:grid;place-items:center;
+      background:var(--bg);transition:opacity 0.8s var(--ease),visibility 0.8s;
+    }
+    #loader.hidden{opacity:0;visibility:hidden}
+    #loader .ring{width:46px;height:46px;border:2px solid var(--border);border-top-color:var(--violet);border-radius:50%;animation:spin 0.9s linear infinite}
+    #loader .lbl{position:absolute;margin-top:90px;font-size:12px;letter-spacing:0.26em;text-transform:uppercase;color:var(--muted-2)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Content overlay */
+    .overlay{position:relative;z-index:10;pointer-events:none}
+    .overlay a,.overlay button{pointer-events:auto}
+    .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 clamp(20px,5vw,44px)}
+
+    /* Top bar */
+    .top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;height:78px}
+    .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--font-display);font-size:1.25rem;font-weight:600}
+    .brand img{width:30px;height:30px}
+    .brand b{color:var(--violet);font-weight:600}
+    .top .back{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:8px;transition:color .25s var(--ease)}
+    .top .back:hover{color:var(--fg)}
+    .top .back svg{width:15px;height:15px}
+
+    /* Hero */
+    .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+    .hero .eyebrow{font-size:12px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:var(--violet);display:inline-flex;align-items:center;gap:12px;margin-bottom:22px}
+    .hero .eyebrow::before{content:"";width:28px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+    .hero h1{font-family:var(--font-display);font-weight:600;font-size:clamp(3rem,11vw,7rem);line-height:0.98;letter-spacing:-0.02em;margin-bottom:20px;max-width:14ch}
+    .hero h1 em{font-style:italic;color:var(--violet)}
+    .hero p{font-size:clamp(1rem,2vw,1.25rem);color:var(--muted);max-width:46ch;margin-bottom:34px}
+    .actions{display:flex;gap:14px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;font-size:14px;font-weight:600;border:1px solid transparent;transition:transform .25s var(--ease),background .25s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease)}
+    .btn svg{width:17px;height:17px}
+    .btn-primary{background:var(--violet);color:#150c26;box-shadow:0 14px 30px -12px rgba(167,139,250,.6)}
+    .btn-primary:hover{background:var(--violet-bright);transform:translateY(-2px)}
+    .btn-ghost{border-color:var(--border);color:var(--fg);background:rgba(20,17,28,.5);backdrop-filter:blur(6px)}
+    .btn-ghost:hover{border-color:var(--violet);transform:translateY(-2px)}
+    .hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted-2);display:flex;align-items:center;gap:9px}
+    .hint .d{width:6px;height:6px;border-radius:50%;background:var(--violet);animation:pulse 1.8s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+
+    /* Content panels below the fold */
+    .panels{position:relative;z-index:10;background:linear-gradient(180deg,transparent,var(--bg) 22%);padding-top:14vh}
+    .panel{padding:clamp(48px,8vw,90px) 0;border-top:1px solid var(--border)}
+    .panel:first-child{border-top:0}
+    .eyebrow-s{font-size:12px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:var(--violet);margin-bottom:16px;display:block}
+    .panel h2{font-family:var(--font-display);font-weight:600;font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;margin-bottom:18px;letter-spacing:-0.01em}
+    .panel p{color:var(--muted);max-width:60ch;margin-bottom:14px}
+    .panel p .hl{color:var(--fg);font-weight:500}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .chip{font-size:12px;color:var(--fg);padding:8px 14px;border:1px solid var(--border);border-radius:999px;background:rgba(20,17,28,.6)}
+    .chip.a{color:var(--violet);border-color:rgba(167,139,250,.35)}
+    .footer{padding:40px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted-2);font-size:13px;font-family:var(--font-sans)}
+
+    @media (max-width:600px){ .hero h1{font-size:clamp(2.6rem,14vw,4rem)} .hint{display:none} }
+
+    @media (prefers-reduced-motion:reduce){
+      #loader .ring{animation:none}
+      .hint .d{animation:none}
+      *{scroll-behavior:auto}
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <div id="loader"><div class="ring" aria-hidden="true"></div><span class="lbl">Preparing experience</span></div>
+
+  <div class="overlay">
+    <div class="wrap top">
+      <a class="brand" href="../index.html" aria-label="LuminaForge home">
+        <img src="../assets/favicon.svg" alt="" width="30" height="30" />
+        <span>Lumina<b>Forge</b></span>
+      </a>
+      <a class="back" href="../index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        Back to portfolio
+      </a>
+    </div>
+
+    <header class="hero">
+      <div class="wrap">
+        <span class="eyebrow">Web designer &amp; developer</span>
+        <h1>Hi, I'm <em>Saima</em>.</h1>
+        <p>I design and build clean, fast websites at LuminaForge — this little world is just me having some fun with the web. Drag it around.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="../index.html#work">See my work
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-ghost" href="../index.html#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class="hint" aria-hidden="true"><span class="d"></span> Drag to explore · scroll for more</div>
+    </header>
+
+    <div class="panels">
+      <div class="wrap">
+        <section class="panel">
+          <span class="eyebrow-s">About</span>
+          <h2>A real person who makes websites for a living.</h2>
+          <p>I'm <span class="hl">Saima</span> — a web designer and developer based in <span class="hl">Mardan, KPK</span>, working with clients across <span class="hl">Rawalpindi and Islamabad</span>. I studied <span class="hl">BS Computer Science</span> at Abdul Wali Khan University Mardan, and I run <span class="hl">LuminaForge</span> as a small, focused studio.</p>
+          <p>I like the craft of it — typography, motion, how a page feels in your hand. This page is a small demo of that.</p>
+        </section>
+
+        <section class="panel">
+          <span class="eyebrow-s">What I work with</span>
+          <h2>Tools of the trade.</h2>
+          <div class="chips">
+            <span class="chip a">HTML</span><span class="chip a">CSS</span><span class="chip a">JavaScript</span>
+            <span class="chip a">React</span><span class="chip a">Three.js</span><span class="chip a">Supabase</span><span class="chip a">Netlify</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <span class="eyebrow-s">Let's build</span>
+          <h2>Want a site that feels like this?</h2>
+          <p>Whether it's a simple presence or a full build, I'd love to hear what you're working on.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="../index.html#contact">Let's Build Your Website
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </section>
+
+        <div class="footer">
+          <span>© <span id="yr">2026</span> LuminaForge · Built by Saima</span>
+          <span>Mardan, KPK · Pakistan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Self-contained interactive 3D — raw WebGL, zero dependencies -->
+  <script>
+  (function () {
+    "use strict";
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var canvas = document.getElementById('scene');
+    var loader = document.getElementById('loader');
+
+    function fallback(){ document.body.classList.add('no3d'); loader.classList.add('hidden'); window.__loaded3d = true; }
+
+    var gl;
+    try { gl = canvas.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: false }) ||
+               canvas.getContext('experimental-webgl'); } catch (e) {}
+    if (!gl) { fallback(); return; }
+
+    /* ---------- tiny mat4 helpers (column-major) ---------- */
+    function perspective(fovy, aspect, near, far){
+      var f = 1/Math.tan(fovy/2), nf = 1/(near-far);
+      return [f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0];
+    }
+    function mul(a,b){
+      var o = new Array(16);
+      for (var r=0;r<4;r++) for (var c=0;c<4;c++){
+        o[c*4+r] = a[0*4+r]*b[c*4+0] + a[1*4+r]*b[c*4+1] + a[2*4+r]*b[c*4+2] + a[3*4+r]*b[c*4+3];
+      }
+      return o;
+    }
+    function rotY(a){ var s=Math.sin(a),c=Math.cos(a); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; }
+    function rotX(a){ var s=Math.sin(a),c=Math.cos(a); return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]; }
+    function trans(x,y,z){ return [1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1]; }
+
+    /* ---------- shaders ---------- */
+    var VS =
+      'attribute vec3 aPos; attribute vec3 aColor; attribute float aSize;' +
+      'uniform mat4 uProj; uniform mat4 uMV; uniform float uDpr;' +
+      'varying vec3 vColor; varying float vA;' +
+      'void main(){ vec4 mv = uMV * vec4(aPos,1.0); gl_Position = uProj * mv;' +
+      '  gl_PointSize = aSize * uDpr * (95.0 / -mv.z);' +
+      '  vColor = aColor; vA = clamp((14.0 + mv.z) / 12.0, 0.15, 1.0); }';
+    var FS =
+      'precision mediump float; varying vec3 vColor; varying float vA;' +
+      'void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c);' +
+      '  if (d > 0.5) discard; float a = smoothstep(0.5, 0.06, d);' +
+      '  gl_FragColor = vec4(vColor, a * vA); }';
+
+    function compile(type, src){ var s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+      if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+    var prog;
+    try {
+      prog = gl.createProgram();
+      gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+      gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    } catch (e) { fallback(); return; }
+    gl.useProgram(prog);
+
+    /* ---------- build an amethyst spiral galaxy ---------- */
+    var small = window.innerWidth < 720;
+    var N = small ? 2600 : 5000;
+    var BRANCHES = 4, SPIN = 2.5, RADIUS = 4.6;
+    var posArr = new Float32Array(N*3), colArr = new Float32Array(N*3), sizeArr = new Float32Array(N);
+
+    // brand colors (0-1) — kept below full white so additive blending stays rich, not blown out
+    var cInner=[0.55,0.42,0.82], cMid=[0.34,0.18,0.66], cOuter=[0.16,0.09,0.36], cGold=[0.62,0.5,0.32];
+    function lerp(a,b,t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+    function rnd(p){ return Math.pow(Math.random(), p) * (Math.random()<0.5?1:-1); }
+
+    for (var i=0;i<N;i++){
+      var r = Math.pow(Math.random(), 0.65) * RADIUS;
+      var branch = (i % BRANCHES) / BRANCHES * Math.PI * 2;
+      var spin = r * SPIN / RADIUS;
+      var scatter = 0.5 * (1 - r/RADIUS*0.55) + 0.08;   // fuller, softer arms
+      var ang = branch + spin;
+      var x = Math.cos(ang) * r + rnd(2.0)*scatter;
+      var z = Math.sin(ang) * r + rnd(2.0)*scatter;
+      var y = rnd(2.6) * scatter * 0.5;                  // thin disc
+      posArr[i*3]=x; posArr[i*3+1]=y; posArr[i*3+2]=z;
+
+      var t = r / RADIUS, col;
+      if (t < 0.45) col = lerp(cInner, cMid, t/0.45); else col = lerp(cMid, cOuter, (t-0.45)/0.55);
+      if (Math.random() < 0.04) col = cGold;             // rare warm sparkle
+      var b = 0.55 + Math.random()*0.35;
+      colArr[i*3]=col[0]*b; colArr[i*3+1]=col[1]*b; colArr[i*3+2]=col[2]*b;
+      sizeArr[i] = (Math.random()*1.3 + 0.7) * (1.3 - t*0.6);
+    }
+
+    function buffer(data, attr, size){
+      var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+      var loc = gl.getAttribLocation(prog, attr); gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+    }
+    buffer(posArr, 'aPos', 3); buffer(colArr, 'aColor', 3); buffer(sizeArr, 'aSize', 1);
+
+    var uProj = gl.getUniformLocation(prog, 'uProj');
+    var uMV   = gl.getUniformLocation(prog, 'uMV');
+    var uDpr  = gl.getUniformLocation(prog, 'uDpr');
+
+    gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // additive
+    gl.disable(gl.DEPTH_TEST);
+
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var proj;
+    function resize(){
+      var w = window.innerWidth, h = window.innerHeight;
+      canvas.width = Math.floor(w*DPR); canvas.height = Math.floor(h*DPR);
+      canvas.style.width = w+'px'; canvas.style.height = h+'px';
+      gl.viewport(0,0,canvas.width,canvas.height);
+      proj = perspective(50*Math.PI/180, w/h, 0.1, 100);
+      gl.uniformMatrix4fv(uProj, false, new Float32Array(proj));
+      gl.uniform1f(uDpr, DPR);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    /* ---------- interaction ---------- */
+    var targetRX = 0.85, targetRY = 0.2, curRX = 0.85, curRY = 0.2;
+    var dragging=false, lastX=0, lastY=0, velX=0, velY=0;
+    var pX=0, pY=0, ptX=0, ptY=0;
+    function down(x,y){ dragging=true; lastX=x; lastY=y; velX=velY=0; }
+    function move(x,y){ ptX=(x/window.innerWidth-0.5); ptY=(y/window.innerHeight-0.5);
+      if(!dragging) return; velY=(x-lastX)*0.007; velX=(y-lastY)*0.007;
+      targetRY+=velY; targetRX+=velX; targetRX=Math.max(-1.4,Math.min(1.4,targetRX)); lastX=x; lastY=y; }
+    function up(){ dragging=false; }
+    canvas.addEventListener('pointerdown', function(e){ down(e.clientX,e.clientY); });
+    window.addEventListener('pointermove', function(e){ move(e.clientX,e.clientY); });
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+
+    var start = performance.now(), running = true;
+    document.addEventListener('visibilitychange', function(){ running=!document.hidden; if(running && !reduce) requestAnimationFrame(frame); });
+
+    function draw(){
+      var model = mul(rotX(curRX), rotY(curRY));
+      var view = trans(-pX*1.1 + 1.7, pY*0.9 - 0.2, -10.8);
+      var mv = mul(view, model);
+      gl.uniformMatrix4fv(uMV, false, new Float32Array(mv));
+      gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.POINTS, 0, N);
+    }
+
+    function frame(){
+      if(!running) return;
+      if(!reduce && !dragging){ targetRY += 0.0011; velX*=0.93; velY*=0.93; targetRX+=velX; targetRY+=velY; }
+      curRX += (targetRX-curRX)*0.07; curRY += (targetRY-curRY)*0.07;
+      pX += (ptX-pX)*0.045; pY += (ptY-pY)*0.045;
+      draw();
+      if(!reduce) requestAnimationFrame(frame);
+    }
+
+    // first paint + reveal
+    requestAnimationFrame(function(){
+      draw();
+      window.__loaded3d = true;
+      loader.classList.add('hidden');
+      if(!reduce) requestAnimationFrame(frame);
+    });
+
+    // last-resort watchdog
+    setTimeout(function(){ if(!window.__loaded3d) fallback(); }, 4000);
+  })();
+  </script>
+</body>
+</html>
